@@ -13,6 +13,10 @@
 <style>
   :root{ --ink:#4a4036; --ink2:#3a3228; --gold:#b08d57; --gold2:#cdb78f; --mut:#8a7a64; --mut2:#a89a82; --paper:#fbf8f3; --paper2:#f1e9da; --line:#e7dcc8; }
   *{ margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  /* 복사/저장 방지 */
+  body{ -webkit-user-select:none; -moz-user-select:none; -ms-user-select:none; user-select:none; }
+  img{ -webkit-user-drag:none; -khtml-user-drag:none; -moz-user-drag:none; user-drag:none;
+       -webkit-touch-callout:none; pointer-events:auto; }
   html{ scroll-behavior:smooth; }
   body{ background:#222; color:var(--ink); font-family:'Gowun Batang',serif; }
   .myeong{ font-family:'Nanum Myeongjo',serif; }
@@ -403,6 +407,11 @@
       }
     });
   };
+  // ── 복사/저장 방지 (일반 사용자 수준) ──
+  document.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  document.addEventListener('dragstart', function(e){ if(e.target && e.target.tagName==='IMG') e.preventDefault(); });
+  document.addEventListener('selectstart', function(e){ var t=e.target; if(t && (t.classList.contains('bank')||t.classList.contains('copy'))) return; e.preventDefault(); });
+
   mBtn.addEventListener('click', function(){
     if(!ytReady || !ytPlayer){ pendingPlay=true; return; }
     if(musicOn){ ytPlayer.pauseVideo(); } else { ytPlayer.unMute(); ytPlayer.playVideo(); }
