@@ -418,5 +418,71 @@
   });
 </script>
 <script src="https://www.youtube.com/iframe_api"></script>
+
+<!-- ── 등장 연출 (anime.js v4) ── -->
+<!-- 안전장치: 이 모듈이 로드 실패(네트워크 등)하면 아무 요소도 숨기지 않아 콘텐츠는 그대로 보임 -->
+<script type="module">
+  import { animate, stagger, utils } from 'https://cdn.jsdelivr.net/npm/animejs@4.0.2/+esm';
+
+  // 움직임 민감 사용자 배려: reduced-motion이면 연출 생략(콘텐츠는 정상 표시)
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    // 아무것도 하지 않음
+  } else {
+    var hidden = ['.cover .lbl','.cover .hm','.cover .nm','.cover .dt','.content > .sec','.foot','.gal-grid img'];
+    try {
+      // 1) 커버 텍스트 — 로드 직후 순차 등장
+      utils.set(['.cover .lbl', '.cover .hm', '.cover .nm', '.cover .dt'], { opacity: 0 });
+      animate('.cover .lbl', { opacity: [0,1], translateY: [14,0], duration: 1100, delay: 250, ease: 'out(3)' });
+      animate('.cover .hm',  { opacity: [0,1], scale: [.9,1],      duration: 1300, delay: 550, ease: 'out(3)' });
+      animate('.cover .nm',  { opacity: [0,1], translateY: [18,0], duration: 1100, delay: 900, ease: 'out(3)' });
+      animate('.cover .dt',  { opacity: [0,1], translateY: [10,0], duration: 1000, delay: 1200, ease: 'out(3)' });
+
+      // 2) 각 섹션 — IntersectionObserver로 화면 진입 시 페이드+슬라이드업
+      //    (트리거는 IO가 확실히 담당, 애니메이션은 anime.js)
+      var secs = Array.prototype.slice.call(document.querySelectorAll('.content > .sec, .foot'));
+      secs.forEach(function(el){ utils.set(el, { opacity: 0 }); });
+      var secIO = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if (e.isIntersecting){
+            animate(e.target, { opacity: [0,1], translateY: [30,0], duration: 900, ease: 'out(3)' });
+            secIO.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.08 });
+      secs.forEach(function(el){ secIO.observe(el); });
+
+      // 3) 갤러리 23장 — 그리드 진입 시 시차(stagger) 등장
+      var gimgs = Array.prototype.slice.call(document.querySelectorAll('.gal-grid img'));
+      var galGrid = document.querySelector('.gal-grid');
+      if (gimgs.length && galGrid){
+        gimgs.forEach(function(im){ utils.set(im, { opacity: 0 }); });
+        var galIO = new IntersectionObserver(function(entries){
+          entries.forEach(function(e){
+            if (e.isIntersecting){
+              animate(gimgs, { opacity: [0,1], scale: [.92,1], duration: 650, delay: stagger(45), ease: 'out(2)' });
+              galIO.disconnect();
+            }
+          });
+        }, { threshold: 0.06 });
+        galIO.observe(galGrid);
+      }
+
+      // 4) 안전망 — 만에 하나 IO가 동작하지 않아도 콘텐츠가 영영 숨지 않도록,
+      //    로드 8초 뒤 아직 화면 안에 있는데 숨겨진 요소는 강제로 드러냄
+      setTimeout(function(){
+        document.querySelectorAll('.content > .sec, .foot, .gal-grid img').forEach(function(el){
+          var r = el.getBoundingClientRect();
+          var onScreen = r.top < innerHeight && r.bottom > 0;
+          if (onScreen && parseFloat(getComputedStyle(el).opacity) < 0.05){
+            utils.set(el, { opacity: 1 });
+          }
+        });
+      }, 8000);
+    } catch (e) {
+      // 오류 시 숨긴 요소를 모두 복구(콘텐츠 우선)
+      utils.set(hidden, { opacity: 1 });
+    }
+  }
+</script>
 </body>
 </html>
