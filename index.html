@@ -449,7 +449,7 @@
       videoId:'W8Xu7iTkUFg',
       playerVars:{ autoplay:0, controls:0, loop:1, playlist:'W8Xu7iTkUFg', playsinline:1, modestbranding:1 },
       events:{
-        'onReady':function(){ ytReady=true; if(pendingPlay){ ytPlayer.playVideo(); } },
+        'onReady':function(){ ytReady=true; if(pendingPlay){ ytPlayer.unMute(); ytPlayer.playVideo(); } },
         'onStateChange':function(e){
           if(e.data===YT.PlayerState.PLAYING){ musicOn=true; mBtn.classList.add('playing'); }
           else if(e.data===YT.PlayerState.PAUSED || e.data===YT.PlayerState.ENDED){ musicOn=false; mBtn.classList.remove('playing'); }
@@ -462,6 +462,16 @@
   mBtn.addEventListener('click', function(){
     if(!ytReady || !ytPlayer){ pendingPlay=true; return; }
     if(musicOn){ ytPlayer.pauseVideo(); } else { ytPlayer.unMute(); ytPlayer.playVideo(); }
+  });
+
+  // ── 첫 사용자 터치 시 배경음악 자동 재생 (브라우저 자동재생 정책 우회) ──
+  function autoStartMusic(){
+    if(musicOn) return;                 // 이미 재생 중이면 무시
+    if(!ytReady || !ytPlayer){ pendingPlay=true; return; }  // 준비 전이면 onReady에서 재생
+    ytPlayer.unMute(); ytPlayer.playVideo();
+  }
+  ['pointerdown','touchstart','click','keydown'].forEach(function(ev){
+    document.addEventListener(ev, autoStartMusic, {once:true, passive:true, capture:true});
   });
 </script>
 <script src="https://www.youtube.com/iframe_api"></script>
