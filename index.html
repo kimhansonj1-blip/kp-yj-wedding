@@ -158,6 +158,17 @@
            background:rgba(255,255,255,.45); font-size:12.5px; line-height:1.95; color:#6a6052; letter-spacing:.2px; }
   .notice .n-ic{ display:block; color:var(--gold); font-size:12px; letter-spacing:4px; margin-bottom:6px; }
 
+  .park-alert{ margin-top:18px; padding:16px 18px; border:1px solid #e3b7b2; border-radius:4px; background:#fdf1ef;
+    text-align:left; font-size:13px; line-height:1.85; color:#b03a32; letter-spacing:.2px; word-break:keep-all; }
+  .park-alert .pa-t{ display:block; font-weight:700; font-size:13.5px; margin-bottom:6px; letter-spacing:1px; }
+  .park-alert b{ color:#9a2a22; }
+  .park-pop{ position:fixed; inset:0; z-index:70; background:rgba(28,22,16,.62); display:none; align-items:center; justify-content:center; padding:24px 16px; }
+  .park-pop.show{ display:flex; }
+  .park-pop .pp-box{ width:100%; max-width:380px; background:#fff; border-radius:8px; padding:24px 22px 18px; box-shadow:0 18px 50px rgba(0,0,0,.3); }
+  .park-pop .park-alert{ margin-top:0; }
+  .park-pop .pp-btn{ display:block; width:100%; margin-top:16px; padding:13px 0; border:0; border-radius:4px; background:#b03a32; color:#fff;
+    font-family:inherit; font-size:13.5px; letter-spacing:2px; cursor:pointer; }
+
   /* 계좌 */
   .acc-toggle{ display:inline-flex; align-items:center; gap:8px; margin-top:6px; padding:13px 32px; border:1px solid var(--gold);
     border-radius:30px; background:#fff; color:var(--gold); font-size:13px; letter-spacing:2px; cursor:pointer; transition:.2s; }
@@ -315,6 +326,7 @@
         </svg>
       </div>
       <div class="map-note">위 그림은 이해를 돕기 위한 약도입니다.<br>정확한 식장 위치는 카카오맵 · 네이버 지도 링크를 확인해 주세요.</div>
+      <div class="park-alert"><span class="pa-t">🚗 주차 안내</span>10월 3일 평화의 공원에서 마스터즈 하프 마라톤이 진행되어 주차장 자리가 없을 수 있습니다.<br><br>행사는 11시에 마무리된다고 하지만,<br>혹시 주차장 자리가 없는 경우<br><b>건너편 하늘공원 주차장(난지천공원 주차장)</b>이나<br><b>월드컵 경기장 주차장</b>을 사용해주세요.<br><br>불편을 드려 대단히 죄송합니다.</div>
       <div class="place-name myeong">마포구 평화의 공원</div>
       <div class="place-sub cor">PEACE PARK</div>
       <div class="traffic">
@@ -372,6 +384,22 @@
 </div>
 
 <div class="toast" id="toast">복사되었습니다</div>
+
+<div class="park-pop" id="parkPop">
+  <div class="pp-box">
+    <div class="park-alert"><span class="pa-t">🚗 주차 안내</span>10월 3일 평화의 공원에서 마스터즈 하프 마라톤이 진행되어 주차장 자리가 없을 수 있습니다.<br><br>행사는 11시에 마무리된다고 하지만,<br>혹시 주차장 자리가 없는 경우<br><b>건너편 하늘공원 주차장(난지천공원 주차장)</b>이나<br><b>월드컵 경기장 주차장</b>을 사용해주세요.<br><br>불편을 드려 대단히 죄송합니다.</div>
+    <button class="pp-btn" id="parkPopClose" type="button">확인</button>
+  </div>
+</div>
+<script>
+  (function(){
+    var pop=document.getElementById('parkPop');
+    pop.classList.add('show');
+    function close(){ pop.classList.remove('show'); }
+    document.getElementById('parkPopClose').addEventListener('click',close);
+    pop.addEventListener('click',function(e){ if(e.target===pop) close(); });
+  })();
+</script>
 
 <script>
   // ── 갤러리 (첫 장은 대표사진, 2~23 그리드) ──
